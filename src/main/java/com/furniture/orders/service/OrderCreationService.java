@@ -2,9 +2,11 @@ package com.furniture.orders.service;
 
 import com.furniture.orders.dto.CreateOrderRequest;
 import com.furniture.orders.dto.OrderResponse;
+import com.furniture.orders.dto.UpdateOrderRequest;
 import com.furniture.orders.entity.Order;
 import com.furniture.orders.exception.OrderNotFoundException;
 import com.furniture.orders.repository.OrderRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -49,5 +51,16 @@ public class OrderCreationService {
                 , "Product" + value.getProductId()
                 , value.getQuantity()
                 , value.getStatus())).orElseThrow(()->new OrderNotFoundException(id));
+    }
+
+    public OrderResponse updateOrderDetails(Long id,UpdateOrderRequest updateOrderRequest) {
+        Order order = orderRepository.findById(id).orElseThrow(()->new OrderNotFoundException(id));
+            order.setQuantity(updateOrderRequest.quantity());
+            order.setProductId(updateOrderRequest.productId());
+       order =  orderRepository.save(order);
+       return new OrderResponse(order.getId()
+               ,"Product"+order.getProductId()
+               ,order.getQuantity()
+               ,order.getStatus());
     }
 }

@@ -2,9 +2,11 @@ package com.furniture.orders.controller;
 
 import com.furniture.orders.dto.CreateOrderRequest;
 import com.furniture.orders.dto.OrderResponse;
+import com.furniture.orders.dto.UpdateOrderRequest;
 import com.furniture.orders.entity.Order;
 import com.furniture.orders.service.OrderCreationService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,5 +38,11 @@ public class OrderController {
     public ResponseEntity<OrderResponse> createOrder( @Valid @RequestBody CreateOrderRequest createOrderRequest) {
         OrderResponse orderResponse = orderCreationService.createOrder(createOrderRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(orderResponse);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<OrderResponse> updateOrder(@PathVariable Long id, @Valid @RequestBody UpdateOrderRequest updateOrderRequest) {
+        OrderResponse orderResponse = orderCreationService.updateOrderDetails(id,updateOrderRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(orderResponse);
     }
 }
