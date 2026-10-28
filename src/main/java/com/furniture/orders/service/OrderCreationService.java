@@ -63,4 +63,9 @@ public class OrderCreationService {
                ,order.getQuantity()
                ,order.getStatus());
     }
+
+    public void deleteOrder(Long id) {
+        orderRepository.findById(id).orElseThrow(()->new OrderNotFoundException(id));
+        orderRepository.deleteById(id);
+    }
 }

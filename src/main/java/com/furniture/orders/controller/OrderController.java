@@ -45,4 +45,10 @@ public class OrderController {
         OrderResponse orderResponse = orderCreationService.updateOrderDetails(id,updateOrderRequest);
         return ResponseEntity.status(HttpStatus.OK).body(orderResponse);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteOrder(@PathVariable Long id) {
+        orderCreationService.deleteOrder(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 }
