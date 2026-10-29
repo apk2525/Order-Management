@@ -6,6 +6,7 @@ import com.furniture.orders.dto.UpdateOrderRequest;
 import com.furniture.orders.entity.Order;
 import com.furniture.orders.exception.OrderNotFoundException;
 import com.furniture.orders.repository.OrderRepository;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,11 +25,12 @@ public class OrderCreationService {
         return orderRepository.findAll();
     }
 
-
+    @Transactional
     public OrderResponse createOrder(CreateOrderRequest createOrderRequest) {
         Order order = new Order(createOrderRequest.productId()
                 ,createOrderRequest.quantity(),"CREATED");
         Order savedOrder = orderRepository.save(order);
+
         return new OrderResponse(savedOrder.getId()
                 ,"Product" + savedOrder.getProductId()
                 ,savedOrder.getQuantity()
@@ -52,12 +54,12 @@ public class OrderCreationService {
                 , value.getQuantity()
                 , value.getStatus())).orElseThrow(()->new OrderNotFoundException(id));
     }
-
+@Transactional
     public OrderResponse updateOrderDetails(Long id,UpdateOrderRequest updateOrderRequest) {
         Order order = orderRepository.findById(id).orElseThrow(()->new OrderNotFoundException(id));
             order.setQuantity(updateOrderRequest.quantity());
             order.setProductId(updateOrderRequest.productId());
-       order =  orderRepository.save(order);
+       //order =  orderRepository.save(order);
        return new OrderResponse(order.getId()
                ,"Product"+order.getProductId()
                ,order.getQuantity()

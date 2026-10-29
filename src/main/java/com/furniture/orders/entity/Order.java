@@ -19,6 +19,9 @@ public class Order {
     private int quantity;
     private String status;
 
+    @Version
+    private Long version;
+
     public Order(Long productId, int quantity, String status) {
         this.productId = productId;
         this.quantity = quantity;
