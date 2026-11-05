@@ -70,4 +70,20 @@ public class OrderCreationService {
         orderRepository.findById(id).orElseThrow(()->new OrderNotFoundException(id));
         orderRepository.deleteById(id);
     }
+    @Transactional
+    public void updateQuantityWithLock(Long orderId,int newQuantity) {
+        Order order = orderRepository.findByIdForUpdate(orderId)
+                .orElseThrow(()->new OrderNotFoundException(orderId));
+        System.out.println(
+                "Lock acquired by " + Thread.currentThread().getName()
+        );
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException("Interrupted during locking experiment", e);
+        }
+        order.setQuantity(newQuantity);
+
+    }
 }
