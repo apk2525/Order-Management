@@ -5,6 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name="orders")
 @NoArgsConstructor
@@ -19,6 +22,9 @@ public class Order {
     private int quantity;
     private String status;
 
+    @OneToMany(mappedBy = "order",cascade = CascadeType.PERSIST)
+    List<OrderItem> orderItems = new ArrayList<>();
+
     @Version
     private Long version;
 
@@ -26,5 +32,10 @@ public class Order {
         this.productId = productId;
         this.quantity = quantity;
         this.status = status;
+    }
+
+    public void addItem(OrderItem orderItem) {
+        orderItems.add(orderItem);
+        orderItem.setOrder(this);
     }
 }

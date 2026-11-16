@@ -1,10 +1,13 @@
 package com.furniture.orders.service;
 
+import com.furniture.orders.domain.OrderItemStatus;
 import com.furniture.orders.dto.CreateOrderRequest;
 import com.furniture.orders.dto.OrderResponse;
 import com.furniture.orders.dto.UpdateOrderRequest;
 import com.furniture.orders.entity.Order;
+import com.furniture.orders.entity.OrderItem;
 import com.furniture.orders.exception.OrderNotFoundException;
+import com.furniture.orders.repository.OrderItemRepository;
 import com.furniture.orders.repository.OrderRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -21,15 +24,24 @@ import java.util.stream.Collectors;
 public class OrderCreationService {
 
     private final OrderRepository orderRepository;
+    private final OrderItemRepository orderItemRepository;
+
     public List<Order> findAll() {
         return orderRepository.findAll();
     }
 
     @Transactional
     public OrderResponse createOrder(CreateOrderRequest createOrderRequest) {
+        OrderItem orderItem = new OrderItem();
+        orderItem.setProductId(createOrderRequest.productId());
+        orderItem.setQuantity(createOrderRequest.quantity());
+        orderItem.setStatus(OrderItemStatus.CREATED);
+
         Order order = new Order(createOrderRequest.productId()
                 ,createOrderRequest.quantity(),"CREATED");
+        order.addItem(orderItem);
         Order savedOrder = orderRepository.save(order);
+        //orderItemRepository.save(orderItem);
 
         return new OrderResponse(savedOrder.getId()
                 ,"Product" + savedOrder.getProductId()
@@ -74,15 +86,6 @@ public class OrderCreationService {
     public void updateQuantityWithLock(Long orderId,int newQuantity) {
         Order order = orderRepository.findByIdForUpdate(orderId)
                 .orElseThrow(()->new OrderNotFoundException(orderId));
-        System.out.println(
-                "Lock acquired by " + Thread.currentThread().getName()
-        );
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new IllegalStateException("Interrupted during locking experiment", e);
-        }
         order.setQuantity(newQuantity);
 
     }
