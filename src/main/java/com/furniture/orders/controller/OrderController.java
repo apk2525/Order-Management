@@ -66,11 +66,11 @@ public class OrderController {
     public ResponseEntity<Page<OrderResponse>> getOrdersByStatusPaged(
             @RequestParam("status") String status,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5")  int pageSize
+            @RequestParam(defaultValue = "5")  int size
             ) {
 
         Page<OrderResponse> orderResponsePage = orderCreationService.
-                getOrdersByStatusPaginated(status, page, pageSize);
+                getOrdersByStatusPaginated(status, page, size);
         return ResponseEntity.ok(orderResponsePage);
     }
 }
