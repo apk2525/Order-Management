@@ -7,6 +7,7 @@ import com.furniture.orders.entity.Order;
 import com.furniture.orders.service.OrderCreationService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -50,5 +51,13 @@ public class OrderController {
     public ResponseEntity<Void> deleteOrder(@PathVariable Long id) {
         orderCreationService.deleteOrder(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @GetMapping("/status")
+    public ResponseEntity<List<OrderResponse>> getOrdersByStatus(@RequestParam("status") String status) {
+       List<OrderResponse> orderResponse =
+               orderCreationService.getOrdersByStatus(status);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(orderResponse);
     }
 }

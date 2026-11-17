@@ -89,4 +89,15 @@ public class OrderCreationService {
         order.setQuantity(newQuantity);
 
     }
+
+    public List<OrderResponse> getOrdersByStatus(String status) {
+        return orderRepository.findOrdersByStatus(status)
+                .stream()
+                .map(order-> new OrderResponse(
+                        order.getId()
+                        ,"Product"+order.getProductId()
+                        ,order.getQuantity()
+                        ,order.getStatus()
+                )).toList();
+    }
 }
