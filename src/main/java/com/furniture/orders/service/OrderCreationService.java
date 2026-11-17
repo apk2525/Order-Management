@@ -12,6 +12,10 @@ import com.furniture.orders.repository.OrderRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -99,5 +103,22 @@ public class OrderCreationService {
                         ,order.getQuantity()
                         ,order.getStatus()
                 )).toList();
+    }
+
+    public Page<OrderResponse> getOrdersByStatusPaginated(
+            String status,int page, int size) {
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by("id").ascending());
+
+        Page<Order> orders =
+                orderRepository.findByStatus(status,pageable);
+        return orders.map(order -> new OrderResponse(
+                order.getId(),
+                "Product"+order.getProductId()
+                ,order.getQuantity()
+                ,order.getStatus()
+        ));
     }
 }

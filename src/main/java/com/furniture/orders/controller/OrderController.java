@@ -7,6 +7,7 @@ import com.furniture.orders.entity.Order;
 import com.furniture.orders.service.OrderCreationService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.data.domain.Page;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -59,5 +60,17 @@ public class OrderController {
                orderCreationService.getOrdersByStatus(status);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(orderResponse);
+    }
+    //pagination
+    @GetMapping("/status/paged")
+    public ResponseEntity<Page<OrderResponse>> getOrdersByStatusPaged(
+            @RequestParam("status") String status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5")  int pageSize
+            ) {
+
+        Page<OrderResponse> orderResponsePage = orderCreationService.
+                getOrdersByStatusPaginated(status, page, pageSize);
+        return ResponseEntity.ok(orderResponsePage);
     }
 }
