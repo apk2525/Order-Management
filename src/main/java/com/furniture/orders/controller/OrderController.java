@@ -1,6 +1,7 @@
 package com.furniture.orders.controller;
 
 import com.furniture.orders.dto.CreateOrderRequest;
+import com.furniture.orders.dto.CursorPageResponse;
 import com.furniture.orders.dto.OrderResponse;
 import com.furniture.orders.dto.UpdateOrderRequest;
 import com.furniture.orders.entity.Order;
@@ -76,12 +77,12 @@ public class OrderController {
 
     //pagination cusor
     @GetMapping("/status/cursor")
-    public ResponseEntity<List<OrderResponse>> getOrdersByStatusCursor(
+    public ResponseEntity<CursorPageResponse> getOrdersByStatusCursor(
             @RequestParam String status,
             @RequestParam(defaultValue = "0") long lastSeenId,
             @RequestParam(defaultValue = "2") int size){
-        List<OrderResponse> orders =
+            CursorPageResponse cursorPageResponses =
                 orderCreationService.getOrdersByCursor(status, lastSeenId, size);
-        return ResponseEntity.ok(orders);
+        return ResponseEntity.ok(cursorPageResponses);
     }
 }

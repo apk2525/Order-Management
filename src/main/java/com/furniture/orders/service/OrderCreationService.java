@@ -2,6 +2,7 @@ package com.furniture.orders.service;
 
 import com.furniture.orders.domain.OrderItemStatus;
 import com.furniture.orders.dto.CreateOrderRequest;
+import com.furniture.orders.dto.CursorPageResponse;
 import com.furniture.orders.dto.OrderResponse;
 import com.furniture.orders.dto.UpdateOrderRequest;
 import com.furniture.orders.entity.Order;
@@ -18,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -122,16 +124,31 @@ public class OrderCreationService {
         ));
     }
 
-    public List<OrderResponse> getOrdersByCursor(
-            String status,Long lastSeenId, int size){
-        Pageable pageable = PageRequest.of(0,size);
-        return orderRepository.findNextOrders(status,lastSeenId,pageable)
-                .stream()
-                .map(order -> new OrderResponse(order.getId(),
+    public CursorPageResponse getOrdersByCursor(
+            String status, Long lastSeenId, int size) {
+
+        Pageable pageable = PageRequest.of(0, size + 1);
+
+        List<Order> orders = orderRepository.findNextOrders(
+                status, lastSeenId, pageable);
+
+        boolean hasNext = orders.size() > size;
+
+        List<OrderResponse> content = orders.stream()
+                .limit(size)
+                .map(order -> new OrderResponse(
+                        order.getId(),
                         "Product" + order.getProductId(),
                         order.getQuantity(),
-                        order.getStatus())).toList();
+                        order.getStatus()
+                ))
+                .toList();
 
+        Long nextCursor = hasNext && !content.isEmpty()
+                ? content.get(content.size() - 1).id()
+                : null;
+
+        return new CursorPageResponse(content, nextCursor, hasNext);
     }
 
 }
