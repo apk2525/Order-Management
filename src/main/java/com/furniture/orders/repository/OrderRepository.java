@@ -25,4 +25,17 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findOrdersByStatus(@Param("status") String status);
 
     Page<Order> findByStatus(String status, Pageable pageable);
+
+    @Query("""
+    SELECT o FROM Order o
+    WHERE o.status = :status
+      AND o.id > :lastSeenId
+    ORDER BY o.id ASC
+    """)
+    List<Order> findNextOrders(
+            @Param("status") String status,
+            @Param("lastSeenId") Long lastSeenId,
+            Pageable pageable);
+
+
 }

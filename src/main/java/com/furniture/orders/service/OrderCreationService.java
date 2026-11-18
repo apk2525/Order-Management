@@ -121,4 +121,17 @@ public class OrderCreationService {
                 ,order.getStatus()
         ));
     }
+
+    public List<OrderResponse> getOrdersByCursor(
+            String status,Long lastSeenId, int size){
+        Pageable pageable = PageRequest.of(0,size);
+        return orderRepository.findNextOrders(status,lastSeenId,pageable)
+                .stream()
+                .map(order -> new OrderResponse(order.getId(),
+                        "Product" + order.getProductId(),
+                        order.getQuantity(),
+                        order.getStatus())).toList();
+
+    }
+
 }

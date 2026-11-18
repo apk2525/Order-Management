@@ -61,7 +61,7 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(orderResponse);
     }
-    //pagination
+    //pagination offset
     @GetMapping("/status/paged")
     public ResponseEntity<Page<OrderResponse>> getOrdersByStatusPaged(
             @RequestParam("status") String status,
@@ -72,5 +72,16 @@ public class OrderController {
         Page<OrderResponse> orderResponsePage = orderCreationService.
                 getOrdersByStatusPaginated(status, page, size);
         return ResponseEntity.ok(orderResponsePage);
+    }
+
+    //pagination cusor
+    @GetMapping("/status/cursor")
+    public ResponseEntity<List<OrderResponse>> getOrdersByStatusCursor(
+            @RequestParam String status,
+            @RequestParam(defaultValue = "0") long lastSeenId,
+            @RequestParam(defaultValue = "2") int size){
+        List<OrderResponse> orders =
+                orderCreationService.getOrdersByCursor(status, lastSeenId, size);
+        return ResponseEntity.ok(orders);
     }
 }
